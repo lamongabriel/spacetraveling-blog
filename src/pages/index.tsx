@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { FiUser, FiCalendar } from 'react-icons/fi';
 import Header from '../components/Header';
 
-import { getPrismicClient } from '../services/prismic';
+import { createClient } from '../../prismicio.js';
 
 import commonStyles from '../styles/common.module.scss';
 import styles from './home.module.scss';
@@ -28,7 +28,7 @@ interface HomeProps {
   postsPagination: PostPagination;
 }
 
-export default function Home(): JSX.Element {
+export default function Home({ posts }): JSX.Element {
   return (
     <>
       <Head>
@@ -39,56 +39,50 @@ export default function Home(): JSX.Element {
         <section className={styles.post__wrapper}>
           <article className={styles.post__preview}>
             <Link href="/">
-              <a>
-                <h2>Como utilizar Hooks</h2>
-                <p>Pensando em sincronização em vez de ciclos de vida.</p>
+              <h2>Como utilizar Hooks</h2>
+              <p>Pensando em sincronização em vez de ciclos de vida.</p>
+              <div>
+                <time>
+                  <FiCalendar size={20} />
+                  <span>15 Mar 2021</span>
+                </time>
                 <div>
-                  <time>
-                    <FiCalendar size={20} />
-                    <span>15 Mar 2021</span>
-                  </time>
-                  <div>
-                    <FiUser size={20} />
-                    <span>Joseph Oliveira</span>
-                  </div>
+                  <FiUser size={20} />
+                  <span>Joseph Oliveira</span>
                 </div>
-              </a>
+              </div>
             </Link>
           </article>
           <article className={styles.post__preview}>
             <Link href="/">
-              <a>
-                <h2>Como utilizar Hooks</h2>
-                <p>Pensando em sincronização em vez de ciclos de vida.</p>
+              <h2>Como utilizar Hooks</h2>
+              <p>Pensando em sincronização em vez de ciclos de vida.</p>
+              <div>
+                <time>
+                  <FiCalendar size={20} />
+                  <span>15 Mar 2021</span>
+                </time>
                 <div>
-                  <time>
-                    <FiCalendar size={20} />
-                    <span>15 Mar 2021</span>
-                  </time>
-                  <div>
-                    <FiUser size={20} />
-                    <span>Joseph Oliveira</span>
-                  </div>
+                  <FiUser size={20} />
+                  <span>Joseph Oliveira</span>
                 </div>
-              </a>
+              </div>
             </Link>
           </article>
           <article className={styles.post__preview}>
             <Link href="/">
-              <a>
-                <h2>Como utilizar Hooks</h2>
-                <p>Pensando em sincronização em vez de ciclos de vida.</p>
+              <h2>Como utilizar Hooks</h2>
+              <p>Pensando em sincronização em vez de ciclos de vida.</p>
+              <div>
+                <time>
+                  <FiCalendar size={20} />
+                  <span>15 Mar 2021</span>
+                </time>
                 <div>
-                  <time>
-                    <FiCalendar size={20} />
-                    <span>15 Mar 2021</span>
-                  </time>
-                  <div>
-                    <FiUser size={20} />
-                    <span>Joseph Oliveira</span>
-                  </div>
+                  <FiUser size={20} />
+                  <span>Joseph Oliveira</span>
                 </div>
-              </a>
+              </div>
             </Link>
           </article>
         </section>
@@ -98,8 +92,14 @@ export default function Home(): JSX.Element {
   );
 }
 
-// export const getStaticProps = async () => {
-//   // const prismic = getPrismicClient({});
-//   // const postsResponse = await prismic.getByType(TODO);
-//   // TODO
-// };
+export const getStaticProps: GetStaticProps = async () => {
+  const prismic = createClient();
+
+  const posts = await prismic.getByType('posts');
+
+  return {
+    props: {
+      posts,
+    },
+  };
+};
