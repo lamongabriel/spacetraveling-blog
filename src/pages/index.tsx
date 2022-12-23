@@ -2,6 +2,11 @@ import { GetStaticProps } from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
 import { FiUser, FiCalendar } from 'react-icons/fi';
+import { useEffect, useRef, useState } from 'react';
+import { RichText } from 'prismic-dom';
+
+import { format } from 'date-fns';
+import ptBR from 'date-fns/locale/pt-BR';
 import Header from '../components/Header';
 
 import { createClient } from '../../prismicio.js';
@@ -28,7 +33,62 @@ interface HomeProps {
   postsPagination: PostPagination;
 }
 
-export default function Home({ posts }): JSX.Element {
+function formatPosts(response): PostPagination {
+  const posts = {
+    // Next page for api calls
+    next_page: response.next_page,
+
+    // Posts itself
+    results: response.results.map(post => ({
+      uid: post.uid,
+      // Date with correct format
+      first_publication_date: format(
+        new Date(post.first_publication_date),
+        'dd MMM yyyy',
+        {
+          locale: ptBR,
+        }
+      ),
+      data: {
+        // Convert from richtext HTML to text only
+        author: RichText.asText(post.data.author),
+        subtitle: RichText.asText(post.data.subtitle),
+        title: RichText.asText(post.data.title),
+      },
+    })),
+  };
+
+  return posts;
+}
+
+export default function Home({ postsPagination }: HomeProps): JSX.Element {
+  const [posts, setPosts] = useState<Post[]>(postsPagination.results);
+  const [showButton, setShowButton] = useState(true);
+  const nextPage = useRef(postsPagination.next_page);
+
+  useEffect(() => {
+    if (!nextPage.current) {
+      setShowButton(false);
+    }
+  }, [posts]);
+
+  async function loadMorePosts(): Promise<void> {
+    if (!nextPage.current) return;
+
+    try {
+      const response = await fetch(nextPage.current);
+      const data = await response.json();
+
+      const postsFormatted = formatPosts(data);
+
+      nextPage.current = postsFormatted.next_page;
+
+      setPosts(prev => [...prev, ...postsFormatted.results]);
+    } catch {
+      //
+    }
+  }
+
   return (
     <>
       <Head>
@@ -37,69 +97,45 @@ export default function Home({ posts }): JSX.Element {
       <Header />
       <main className={`${commonStyles.container} ${styles.content}`}>
         <section className={styles.post__wrapper}>
-          <article className={styles.post__preview}>
-            <Link href="/">
-              <h2>Como utilizar Hooks</h2>
-              <p>Pensando em sincronização em vez de ciclos de vida.</p>
-              <div>
-                <time>
-                  <FiCalendar size={20} />
-                  <span>15 Mar 2021</span>
-                </time>
+          {posts.map(post => (
+            <article className={styles.post__preview} key={post.uid}>
+              <Link href="/">
+                <h2>{post.data.title}</h2>
+                <p>{post.data.subtitle}</p>
                 <div>
-                  <FiUser size={20} />
-                  <span>Joseph Oliveira</span>
+                  <time>
+                    <FiCalendar size={20} />
+                    <span>{post.first_publication_date}</span>
+                  </time>
+                  <div>
+                    <FiUser size={20} />
+                    <span>{post.data.author}</span>
+                  </div>
                 </div>
-              </div>
-            </Link>
-          </article>
-          <article className={styles.post__preview}>
-            <Link href="/">
-              <h2>Como utilizar Hooks</h2>
-              <p>Pensando em sincronização em vez de ciclos de vida.</p>
-              <div>
-                <time>
-                  <FiCalendar size={20} />
-                  <span>15 Mar 2021</span>
-                </time>
-                <div>
-                  <FiUser size={20} />
-                  <span>Joseph Oliveira</span>
-                </div>
-              </div>
-            </Link>
-          </article>
-          <article className={styles.post__preview}>
-            <Link href="/">
-              <h2>Como utilizar Hooks</h2>
-              <p>Pensando em sincronização em vez de ciclos de vida.</p>
-              <div>
-                <time>
-                  <FiCalendar size={20} />
-                  <span>15 Mar 2021</span>
-                </time>
-                <div>
-                  <FiUser size={20} />
-                  <span>Joseph Oliveira</span>
-                </div>
-              </div>
-            </Link>
-          </article>
+              </Link>
+            </article>
+          ))}
         </section>
-        <button type="button">Carregar mais posts</button>
+        {showButton && (
+          <button type="button" onClick={loadMorePosts}>
+            Carregar mais posts
+          </button>
+        )}
       </main>
     </>
   );
 }
 
 export const getStaticProps: GetStaticProps = async () => {
-  const prismic = createClient();
+  const prismic = createClient({});
 
-  const posts = await prismic.getByType('posts');
+  const response = await prismic.getByType('posts', {
+    pageSize: 3,
+  });
 
   return {
     props: {
-      posts,
+      postsPagination: formatPosts(response),
     },
   };
 };
