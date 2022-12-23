@@ -1,1 +1,64 @@
-// TODO
+.content {
+  padding: 0;
+
+  button {
+    color: var(--highlight-color);
+    background-color: transparent;
+    margin-left: 2rem;
+
+    font-weight: 600;
+    font-size: 1.125rem;
+    line-height: 1.375rem;
+
+    transition: filter 200ms;
+
+    &:hover {
+      filter: brightness(0.8);
+    }
+  }
+}
+
+.post__wrapper {
+
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 3rem;
+
+  .post__preview {
+
+    padding: 1.5rem 2rem;
+    border-radius: 0.5rem;
+
+    cursor: pointer;
+    transition: transform 200ms, box-shadow 200ms;
+
+    &:hover {
+      box-shadow: rgba(0, 0, 0, 0.5) 0px 3px 8px;
+      transform: scale(1.05);
+    }
+
+    h2 {
+      font-size: 1.75rem;
+      color: var(--heading-color);
+    }
+
+    p {
+      margin-top: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    a {
+      >div {
+        display: flex;
+        gap: 3rem;
+
+        >div, time {
+          display: flex;
+          align-items: center;
+          gap: 0.6rem
+        }
+      }
+    }
+  }
+}
+
