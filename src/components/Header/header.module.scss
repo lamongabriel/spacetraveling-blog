@@ -5,12 +5,14 @@
   align-items: center;
 
   a {
-    display: block;
-    transition: transform 300ms, filter 300ms;
+    img {
+      display: block;
+      transition: transform 300ms, filter 300ms;
 
-    &:hover {
-      transform: scale(1.05);
-      filter: drop-shadow(var(--highlight-color) 0px 3px 8px);
+      &:hover {
+        transform: scale(1.05);
+        filter: drop-shadow(var(--highlight-color) 0px 3px 8px);
+      }
     }
   }
 
