@@ -1,0 +1,98 @@
+{
+  "uid": {
+    "__TYPE__": "UIDContent",
+    "value": "planet"
+  },
+  "title": {
+    "__TYPE__": "StructuredTextContent",
+    "value": [
+      {
+        "type": "heading1",
+        "content": {
+          "text": "Beauty"
+        }
+      }
+    ]
+  },
+  "subtitle": {
+    "__TYPE__": "StructuredTextContent",
+    "value": [
+      {
+        "type": "heading3",
+        "content": {
+          "text": "Government"
+        }
+      }
+    ]
+  },
+  "author": {
+    "__TYPE__": "StructuredTextContent",
+    "value": [
+      {
+        "type": "paragraph",
+        "content": {
+          "text": "Ex laborum aute quis voluptate commodo exercitation fugiat irure commodo ea aute. Cillum cupidatat nisi elit velit sit veniam officia nulla. Nulla tempor culpa dolor laboris exercitation."
+        }
+      }
+    ]
+  },
+  "banner": {
+    "__TYPE__": "ImageContent",
+    "origin": {
+      "id": "main",
+      "url": "https://images.unsplash.com/photo-1593642532973-d31b6557fa68",
+      "width": 8640,
+      "height": 8640
+    },
+    "url": "https://images.unsplash.com/photo-1593642532973-d31b6557fa68",
+    "width": 8640,
+    "height": 8640,
+    "edit": {
+      "zoom": 1,
+      "crop": {
+        "x": 0,
+        "y": 0
+      },
+      "background": "transparent"
+    },
+    "thumbnails": {}
+  },
+  "content": {
+    "__TYPE__": "GroupContentType",
+    "value": [
+      {
+        "__TYPE__": "GroupItemContent",
+        "value": [
+          [
+            "heading",
+            {
+              "__TYPE__": "StructuredTextContent",
+              "value": [
+                {
+                  "type": "heading2",
+                  "content": {
+                    "text": "Yourself"
+                  }
+                }
+              ]
+            }
+          ],
+          [
+            "body",
+            {
+              "__TYPE__": "StructuredTextContent",
+              "value": [
+                {
+                  "type": "paragraph",
+                  "content": {
+                    "text": "Velit consectetur ut elit officia magna elit qui aute anim mollit reprehenderit eu est in eu. Aute eiusmod consequat adipisicing ad exercitation mollit laborum commodo."
+                  }
+                }
+              ]
+            }
+          ]
+        ]
+      }
+    ]
+  }
+}
