@@ -1,3 +1,5 @@
+/* eslint-disable react/no-danger */
+import { Fragment } from 'react';
 import Head from 'next/head';
 
 import { GetStaticPaths, GetStaticProps } from 'next';
@@ -38,12 +40,12 @@ export default function Post({ post }: PostProps): JSX.Element {
   if (!post) {
     return null;
   }
-
-  console.log(post);
   return (
     <>
       <Head>
-        <title>{post.data.title} | spacetraveling.</title>
+        <title>{`${post.data.title} | spacetraveling.`}</title>
+        <meta property="og:title" content={post.data.title} />
+        <meta property="og:image" content={post.data.banner.url} />
       </Head>
       <Header />
       <main className={styles.post}>
@@ -64,7 +66,7 @@ export default function Post({ post }: PostProps): JSX.Element {
               </div>
               <div>
                 <FiClock size={20} />
-                <span>4 min</span>
+                <span>{post.time_to_read}</span>
               </div>
             </div>
           </section>
@@ -72,14 +74,13 @@ export default function Post({ post }: PostProps): JSX.Element {
             className={`${commonStyles.container} ${styles.post__content}`}
           >
             {post.data.content.map(content => (
-              <>
-                <h2>{content.heading}</h2>
+              <Fragment key={content.heading}>
                 <div
                   dangerouslySetInnerHTML={{
-                    __html: content.body.text,
+                    __html: content.heading + content.body.text,
                   }}
                 />
-              </>
+              </Fragment>
             ))}
           </section>
         </article>
@@ -102,6 +103,13 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 
   const response = await prismic.getByUID('posts', slug);
 
+  type ResponseContent = {
+    heading: string;
+    body: {
+      text: string;
+    };
+  };
+
   const post = {
     data: {
       title: RichText.asText(response.data.title),
@@ -110,7 +118,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
         url: response.data.banner.url,
       },
       content: response.data.content.map(content => ({
-        heading: RichText.asText([content.heading[0]]),
+        heading: RichText.asHtml([content.heading[0]]),
         body: {
           text: RichText.asHtml(content.body),
         },
@@ -123,11 +131,26 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
         locale: ptBR,
       }
     ),
+    time_to_read: `${Math.ceil(
+      (response.data.content.reduce(
+        // @ts-expect-error: response via prismic returns never[],
+        // which causes a reduce error
+        (prev: number, cur: ResponseContent): number => {
+          return (
+            prev +
+            (RichText.asText(cur.body).split(' ').length +
+              RichText.asText(cur.heading).split(' ').length)
+          );
+        },
+        0
+      ) as unknown as number) / 200
+    )} min`,
   };
 
   return {
     props: {
       post,
+      response,
     },
   };
 };
