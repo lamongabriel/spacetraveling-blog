@@ -40,6 +40,7 @@ export function Comments(): JSX.Element {
 
 interface Post {
   first_publication_date: string | null;
+  last_publication_date: string | null;
   time_to_read: string;
   data: {
     title: string;
@@ -116,6 +117,9 @@ export default function Post({
                 <span>{post.time_to_read}</span>
               </div>
             </div>
+            {post.first_publication_date !== post.last_publication_date && (
+              <i>* editado em {post.last_publication_date}</i>
+            )}
           </section>
           <section
             className={`${commonStyles.container} ${styles.post__content}`}
@@ -200,6 +204,12 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     return `${totalSum} min`;
   }
 
+  function formatDate(date: string): string {
+    return format(new Date(date), 'dd MMM yyyy', {
+      locale: ptBR,
+    });
+  }
+
   const post = {
     data: {
       title: RichText.asText(currentPost.data.title),
@@ -214,13 +224,8 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
         },
       })),
     },
-    first_publication_date: format(
-      new Date(currentPost.first_publication_date),
-      'dd MMM yyyy',
-      {
-        locale: ptBR,
-      }
-    ),
+    first_publication_date: formatDate(currentPost.first_publication_date),
+    last_publication_date: formatDate(currentPost.last_publication_date),
     time_to_read: calculateTimeToRead(currentPost as PostNotFiltered),
   };
 
