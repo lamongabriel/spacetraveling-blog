@@ -3,11 +3,14 @@ import Head from 'next/head';
 import { GetStaticPaths, GetStaticProps } from 'next';
 
 import { FiCalendar, FiClock, FiUser } from 'react-icons/fi';
-import { getPrismicClient } from '../../services/prismic';
 
+import { RichText } from 'prismic-dom';
+import { format } from 'date-fns';
+import ptBR from 'date-fns/locale/pt-BR';
 import commonStyles from '../../styles/common.module.scss';
 import styles from './post.module.scss';
 import Header from '../../components/Header';
+import { createClient } from '../../../prismicio.js';
 
 interface Post {
   first_publication_date: string | null;
@@ -30,7 +33,8 @@ interface PostProps {
   post: Post;
 }
 
-export default function Post(): JSX.Element {
+export default function Post({ post }: PostProps): JSX.Element {
+  console.log(post);
   return (
     <>
       <Head>
@@ -141,16 +145,38 @@ export default function Post(): JSX.Element {
   );
 }
 
-// export const getStaticPaths = async () => {
-//   const prismic = getPrismicClient({});
-//   const posts = await prismic.getByType(TODO);
+export const getStaticPaths: GetStaticPaths = async () => {
+  return {
+    fallback: true,
+    paths: ['/post/elixir-por-tras-da-linguagem-de-programacao-brasileira'],
+  };
+};
 
-//   // TODO
-// };
+export const getStaticProps: GetStaticProps = async ({ params }) => {
+  const { slug } = params as { slug: string };
 
-// export const getStaticProps = async ({params }) => {
-//   const prismic = getPrismicClient({});
-//   const response = await prismic.getByUID(TODO);
+  const prismic = createClient({});
 
-//   // TODO
-// };
+  const response = await prismic.getByUID('posts', slug);
+
+  const post = {
+    first_publication_date: format(
+      new Date(response.first_publication_date),
+      'dd MMM yyyy',
+      {
+        locale: ptBR,
+      }
+    ),
+    data: {
+      author: RichText.asText(response.data.author),
+      title: RichText.asText(response.data.title),
+      // content: RichText.asHtml(response.data.content),
+    },
+  };
+
+  return {
+    props: {
+      post: response,
+    },
+  };
+};

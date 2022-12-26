@@ -17,6 +17,10 @@ const routes = [
     type: 'posts',
     path: '/',
   },
+  {
+    type: 'posts',
+    path: '/post',
+  },
 ];
 
 /**

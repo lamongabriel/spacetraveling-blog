@@ -63,29 +63,26 @@ function formatPosts(response): PostPagination {
 
 export default function Home({ postsPagination }: HomeProps): JSX.Element {
   const [posts, setPosts] = useState<Post[]>(postsPagination.results);
-  const [showButton, setShowButton] = useState(true);
   const nextPage = useRef(postsPagination.next_page);
 
-  useEffect(() => {
-    if (!nextPage.current) {
-      setShowButton(false);
-    }
-  }, [posts]);
+  const [showButton, setShowButton] = useState(
+    postsPagination.next_page !== null
+  );
 
   async function loadMorePosts(): Promise<void> {
     if (!nextPage.current) return;
 
     try {
-      const response = await fetch(nextPage.current);
-      const data = await response.json();
+      const request = await fetch(nextPage.current);
+      const data = await request.json();
 
-      const postsFormatted = formatPosts(data);
+      nextPage.current = data.next_page;
+      if (!nextPage.current) setShowButton(false);
 
-      nextPage.current = postsFormatted.next_page;
-
-      setPosts(prev => [...prev, ...postsFormatted.results]);
+      const newPosts = formatPosts(data);
+      setPosts(prev => [...prev, ...newPosts.results]);
     } catch {
-      //
+      setShowButton(false);
     }
   }
 
@@ -99,7 +96,7 @@ export default function Home({ postsPagination }: HomeProps): JSX.Element {
         <section className={styles.post__wrapper}>
           {posts.map(post => (
             <article className={styles.post__preview} key={post.uid}>
-              <Link href="/">
+              <Link href={`/post/${post.uid}`}>
                 <h2>{post.data.title}</h2>
                 <p>{post.data.subtitle}</p>
                 <div>
@@ -130,6 +127,8 @@ export const getStaticProps: GetStaticProps = async () => {
   const prismic = createClient({});
 
   const response = await prismic.getByType('posts', {
+    // Page size set to 3, to show pagination working, but you can set
+    // to a value like 20, to be more useful.
     pageSize: 3,
   });
 
