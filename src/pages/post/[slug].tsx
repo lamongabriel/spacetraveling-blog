@@ -2,7 +2,7 @@
 import { Fragment } from 'react';
 import Head from 'next/head';
 
-import next, { GetStaticPaths, GetStaticProps } from 'next';
+import { GetStaticPaths, GetStaticProps } from 'next';
 
 import { FiCalendar, FiClock, FiUser } from 'react-icons/fi';
 
@@ -33,19 +33,27 @@ interface Post {
   };
 }
 
-interface OptionsPost {
+interface PostNotFiltered {
   uid: string;
   data: {
     title: {
       text: string;
+    }[];
+    content: {
+      body: {
+        text: string;
+      }[];
+      heading: {
+        text: string;
+      }[];
     }[];
   };
 }
 
 interface PostProps {
   post: Post;
-  prevPost: OptionsPost;
-  nextPost: OptionsPost;
+  prevPost: PostNotFiltered;
+  nextPost: PostNotFiltered;
 }
 
 export default function Post({
@@ -141,13 +149,6 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 
   const currentPost = await prismic.getByUID('posts', slug);
 
-  const nextPost = await prismic.getAllByType('posts', {
-    orderings: ['document.first_publication_date desc'],
-    after: currentPost.id,
-    pageSize: 1,
-    limit: 1,
-  });
-
   const prevPost = await prismic.getAllByType('posts', {
     orderings: ['document.first_publication_date'],
     after: currentPost.id,
@@ -155,12 +156,25 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     limit: 1,
   });
 
-  type currentPostContent = {
-    heading: string;
-    body: {
-      text: string;
-    };
-  };
+  const nextPost = await prismic.getAllByType('posts', {
+    orderings: ['document.first_publication_date desc'],
+    after: currentPost.id,
+    pageSize: 1,
+    limit: 1,
+  });
+
+  function calculateTimeToRead(mapper: PostNotFiltered): string {
+    const totalSum = Math.ceil(
+      (mapper.data.content.reduce((prev, cur): number => {
+        return (
+          prev +
+          (RichText.asText(cur.body).split(' ').length +
+            RichText.asText(cur.heading).split(' ').length)
+        );
+      }, 0) as unknown as number) / 200
+    );
+    return `${totalSum} min`;
+  }
 
   const post = {
     data: {
@@ -183,20 +197,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
         locale: ptBR,
       }
     ),
-    time_to_read: `${Math.ceil(
-      (currentPost.data.content.reduce(
-        // @ts-expect-error: currentPost via prismic returns never[],
-        // which causes a reduce error
-        (prev: number, cur: currentPostContent): number => {
-          return (
-            prev +
-            (RichText.asText(cur.body).split(' ').length +
-              RichText.asText(cur.heading).split(' ').length)
-          );
-        },
-        0
-      ) as unknown as number) / 200
-    )} min`,
+    time_to_read: calculateTimeToRead(currentPost as PostNotFiltered),
   };
 
   return {
@@ -205,6 +206,6 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
       nextPost: nextPost[0] ?? null,
       prevPost: prevPost[0] ?? null,
     },
-    revalidate: 1,
+    revalidate: 60 * 60 * 24, // 24 hours, 1 day.
   };
 };
