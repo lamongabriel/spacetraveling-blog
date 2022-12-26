@@ -17,6 +17,13 @@
       filter: brightness(0.8);
     }
   }
+
+  h1 {
+    padding: 1.5rem 2rem;
+    font-size: clamp(2rem, 10vw, 3rem);
+    line-height: 3.5rem;
+    color: var(--highlight-color);
+  }
 }
 
 .post__wrapper {

@@ -13,6 +13,7 @@ import { createClient } from '../../prismicio.js';
 
 import commonStyles from '../styles/common.module.scss';
 import styles from './home.module.scss';
+import { Greeting } from '../components/Greeting';
 
 interface Post {
   uid?: string;
@@ -93,6 +94,7 @@ export default function Home({ postsPagination }: HomeProps): JSX.Element {
       </Head>
       <Header />
       <main className={`${commonStyles.container} ${styles.content}`}>
+        <Greeting />
         <section className={styles.post__wrapper}>
           {posts.map(post => (
             <article className={styles.post__preview} key={post.uid}>
