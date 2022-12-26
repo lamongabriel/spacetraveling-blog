@@ -2,7 +2,7 @@ import { GetStaticProps } from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
 import { FiUser, FiCalendar } from 'react-icons/fi';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { RichText } from 'prismic-dom';
 
 import { format } from 'date-fns';
