@@ -5,6 +5,7 @@
   align-items: center;
 
   a {
+    display: inline-block;
     img {
       display: block;
       transition: transform 300ms, filter 300ms;

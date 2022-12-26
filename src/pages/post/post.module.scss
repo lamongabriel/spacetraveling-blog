@@ -89,7 +89,7 @@
         line-height: 1.2rem;
         color: var(--highlight-color);
         margin-top: 0.5rem;
-        display: block;
+        display: inline-block;
 
         transition: filter 200ms;
 
@@ -113,6 +113,10 @@
         margin-left: auto;
         text-align: right;
       }
+    }
+
+    >section {
+      margin-top: 3rem;
     }
   }
 }
