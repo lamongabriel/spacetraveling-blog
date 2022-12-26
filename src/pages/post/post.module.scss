@@ -68,4 +68,51 @@
       }
     }
   }
+  >section {
+    hr{
+      height: 1px;
+      width: 100%;
+      background-color: var(--body-color);
+      opacity: 0.1;
+      margin: 4rem 0;
+    }
+
+    .post__options {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+
+      span {
+        font-weight: 600;
+        font-size: 1rem;
+        line-height: 1.2rem;
+        color: var(--highlight-color);
+        margin-top: 0.5rem;
+        display: block;
+
+        transition: filter 200ms;
+
+        &:hover {
+          filter: opacity(0.8);
+        }
+      }
+
+      p {
+        color: var(--heading-color);
+        font-size: 1.2rem;
+        font-weight: 400;
+      }
+
+      .post__options__prev {
+        margin-right: auto;
+        text-align: left;
+
+      }
+      .post__options__next {
+        margin-left: auto;
+        text-align: right;
+      }
+    }
+  }
 }

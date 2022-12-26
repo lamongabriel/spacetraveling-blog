@@ -2,13 +2,14 @@
 import { Fragment } from 'react';
 import Head from 'next/head';
 
-import { GetStaticPaths, GetStaticProps } from 'next';
+import next, { GetStaticPaths, GetStaticProps } from 'next';
 
 import { FiCalendar, FiClock, FiUser } from 'react-icons/fi';
 
 import { RichText } from 'prismic-dom';
 import { format } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
+import Link from 'next/link';
 import commonStyles from '../../styles/common.module.scss';
 import styles from './post.module.scss';
 import Header from '../../components/Header';
@@ -32,11 +33,26 @@ interface Post {
   };
 }
 
-interface PostProps {
-  post: Post;
+interface OptionsPost {
+  uid: string;
+  data: {
+    title: {
+      text: string;
+    }[];
+  };
 }
 
-export default function Post({ post }: PostProps): JSX.Element {
+interface PostProps {
+  post: Post;
+  prevPost: OptionsPost;
+  nextPost: OptionsPost;
+}
+
+export default function Post({
+  post,
+  prevPost,
+  nextPost,
+}: PostProps): JSX.Element {
   if (!post) {
     return null;
   }
@@ -84,6 +100,28 @@ export default function Post({ post }: PostProps): JSX.Element {
             ))}
           </section>
         </article>
+        <section className={commonStyles.container}>
+          <hr />
+          <div className={styles.post__options}>
+            {prevPost && (
+              <div className={styles.post__options__prev}>
+                <p>{prevPost?.data?.title[0]?.text}</p>
+                <Link href={`/post/${prevPost.uid}`}>
+                  <span>Post anterior</span>
+                </Link>
+              </div>
+            )}
+
+            {nextPost && (
+              <div className={styles.post__options__next}>
+                <p>{nextPost?.data?.title[0]?.text}</p>
+                <Link href={`/post/${nextPost.uid}`}>
+                  <span>Próximo post</span>
+                </Link>
+              </div>
+            )}
+          </div>
+        </section>
       </main>
     </>
   );
@@ -101,9 +139,23 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 
   const prismic = createClient({});
 
-  const response = await prismic.getByUID('posts', slug);
+  const currentPost = await prismic.getByUID('posts', slug);
 
-  type ResponseContent = {
+  const nextPost = await prismic.getAllByType('posts', {
+    orderings: ['document.first_publication_date desc'],
+    after: currentPost.id,
+    pageSize: 1,
+    limit: 1,
+  });
+
+  const prevPost = await prismic.getAllByType('posts', {
+    orderings: ['document.first_publication_date'],
+    after: currentPost.id,
+    pageSize: 1,
+    limit: 1,
+  });
+
+  type currentPostContent = {
     heading: string;
     body: {
       text: string;
@@ -112,12 +164,12 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 
   const post = {
     data: {
-      title: RichText.asText(response.data.title),
-      author: RichText.asText(response.data.author),
+      title: RichText.asText(currentPost.data.title),
+      author: RichText.asText(currentPost.data.author),
       banner: {
-        url: response.data.banner.url,
+        url: currentPost.data.banner.url,
       },
-      content: response.data.content.map(content => ({
+      content: currentPost.data.content.map(content => ({
         heading: RichText.asHtml([content.heading[0]]),
         body: {
           text: RichText.asHtml(content.body),
@@ -125,17 +177,17 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
       })),
     },
     first_publication_date: format(
-      new Date(response.first_publication_date),
+      new Date(currentPost.first_publication_date),
       'dd MMM yyyy',
       {
         locale: ptBR,
       }
     ),
     time_to_read: `${Math.ceil(
-      (response.data.content.reduce(
-        // @ts-expect-error: response via prismic returns never[],
+      (currentPost.data.content.reduce(
+        // @ts-expect-error: currentPost via prismic returns never[],
         // which causes a reduce error
-        (prev: number, cur: ResponseContent): number => {
+        (prev: number, cur: currentPostContent): number => {
           return (
             prev +
             (RichText.asText(cur.body).split(' ').length +
@@ -150,7 +202,9 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   return {
     props: {
       post,
-      response,
+      nextPost: nextPost[0] ?? null,
+      prevPost: prevPost[0] ?? null,
     },
+    revalidate: 1,
   };
 };

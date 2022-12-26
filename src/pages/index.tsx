@@ -130,6 +130,7 @@ export const getStaticProps: GetStaticProps = async () => {
     // Page size set to 3, to show pagination working, but you can set
     // to a value like 20, to be more useful.
     pageSize: 3,
+    orderings: ['document.first_publication_date desc'],
   });
 
   return {
