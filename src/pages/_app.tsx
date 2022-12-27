@@ -1,11 +1,12 @@
 import Link from 'next/link';
 
 import { AppProps } from 'next/app';
-import '../styles/globals.scss';
 
 import { PrismicProvider } from '@prismicio/react';
 import { PrismicPreview } from '@prismicio/next';
 import { repositoryName } from '../../prismicio';
+
+import '../styles/globals.scss';
 
 function MyApp({ Component, pageProps }: AppProps): JSX.Element {
   return (

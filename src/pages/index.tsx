@@ -1,19 +1,26 @@
+import { useRef, useState } from 'react';
 import { GetStaticProps } from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
-import { FiUser, FiCalendar } from 'react-icons/fi';
-import { useRef, useState } from 'react';
-import { RichText } from 'prismic-dom';
 
+// Icons
+import { FiUser, FiCalendar } from 'react-icons/fi';
+
+// Helpers
 import { format } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
-import Header from '../components/Header';
 
+// Prismic
+import { RichText } from 'prismic-dom';
 import { createClient } from '../../prismicio';
 
+// Components
+import Header from '../components/Header';
+import { Greeting } from '../components/Greeting';
+
+// Styles
 import commonStyles from '../styles/common.module.scss';
 import styles from './home.module.scss';
-import { Greeting } from '../components/Greeting';
 
 interface Post {
   uid?: string;

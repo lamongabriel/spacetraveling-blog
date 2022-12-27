@@ -1,22 +1,28 @@
 /* eslint-disable react/no-danger */
 import { Fragment } from 'react';
-import Head from 'next/head';
-
-import * as prismicH from '@prismicio/helpers';
-
 import { GetStaticPaths, GetStaticProps } from 'next';
+import Head from 'next/head';
+import Link from 'next/link';
 
+// Icons
 import { FiCalendar, FiClock, FiUser } from 'react-icons/fi';
 
-import { RichText } from 'prismic-dom';
+// Helpers
 import { format } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
-import Link from 'next/link';
+
+// Prismic
+import * as prismicH from '@prismicio/helpers';
+import { RichText } from 'prismic-dom';
+import { createClient } from '../../../prismicio';
+
+// Components
+import Header from '../../components/Header';
+import { Comments } from '../../components/Comments';
+
+// Styles
 import commonStyles from '../../styles/common.module.scss';
 import styles from './post.module.scss';
-import Header from '../../components/Header';
-import { createClient } from '../../../prismicio';
-import { Comments } from '../../components/Comments';
 
 interface Post {
   first_publication_date: string | null;
