@@ -2,6 +2,8 @@
 import { Fragment } from 'react';
 import Head from 'next/head';
 
+import * as prismicH from '@prismicio/helpers';
+
 import { GetStaticPaths, GetStaticProps } from 'next';
 
 import { FiCalendar, FiClock, FiUser } from 'react-icons/fi';
@@ -13,7 +15,7 @@ import Link from 'next/link';
 import commonStyles from '../../styles/common.module.scss';
 import styles from './post.module.scss';
 import Header from '../../components/Header';
-import { createClient } from '../../../prismicio.js';
+import { createClient } from '../../../prismicio';
 import { Comments } from '../../components/Comments';
 
 interface Post {
@@ -142,16 +144,22 @@ export default function Post({
 }
 
 export const getStaticPaths: GetStaticPaths = async () => {
+  const prismic = createClient({});
+  const pages = await prismic.getAllByType('posts');
+
   return {
     fallback: true,
-    paths: ['/post/elixir-por-tras-da-linguagem-de-programacao-brasileira'],
+    paths: pages.map(page => prismicH.asLink(page)),
   };
 };
 
-export const getStaticProps: GetStaticProps = async ({ params }) => {
+export const getStaticProps: GetStaticProps = async ({
+  params,
+  previewData,
+}) => {
   const { slug } = params as { slug: string };
 
-  const prismic = createClient({});
+  const prismic = createClient({ previewData });
 
   const currentPost = await prismic.getByUID('posts', slug);
 

@@ -9,7 +9,7 @@ import { format } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
 import Header from '../components/Header';
 
-import { createClient } from '../../prismicio.js';
+import { createClient } from '../../prismicio';
 
 import commonStyles from '../styles/common.module.scss';
 import styles from './home.module.scss';

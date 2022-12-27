@@ -5,7 +5,7 @@ import '../styles/globals.scss';
 
 import { PrismicProvider } from '@prismicio/react';
 import { PrismicPreview } from '@prismicio/next';
-import { repositoryName } from '../../prismicio.js';
+import { repositoryName } from '../../prismicio';
 
 function MyApp({ Component, pageProps }: AppProps): JSX.Element {
   return (

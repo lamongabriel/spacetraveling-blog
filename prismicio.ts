@@ -19,7 +19,7 @@ const routes = [
   },
   {
     type: 'posts',
-    path: '/post',
+    path: '/post/:uid',
   },
 ];
 
@@ -29,9 +29,10 @@ const routes = [
  *
  * @param config {prismicNext.CreateClientConfig} - Configuration for the Prismic client.
  */
-export const createClient = (config = {}) => {
+export const createClient = (config: prismicNext.CreateClientConfig = {}) => {
   const client = prismic.createClient(sm.apiEndpoint, {
     routes,
+    accessToken: process.env.ACCESS_KEY as string,
     ...config,
   });
 
