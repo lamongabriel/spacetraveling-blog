@@ -30,6 +30,7 @@ interface Post {
   time_to_read: string;
   data: {
     title: string;
+    subtitle: string;
     banner: {
       url: string;
     };
@@ -78,7 +79,10 @@ export default function Post({
     <>
       <Head>
         <title>{`${post.data.title} | spacetraveling.`}</title>
+        <meta name="description" content={post.data.subtitle} />
+
         <meta property="og:title" content={post.data.title} />
+        <meta property="og:description" content={post.data.subtitle} />
         <meta property="og:image" content={post.data.banner.url} />
       </Head>
       <Header />
@@ -206,6 +210,7 @@ export const getStaticProps: GetStaticProps = async ({
     data: {
       title: RichText.asText(currentPost.data.title),
       author: RichText.asText(currentPost.data.author),
+      subtitle: RichText.asText(currentPost.data.subtitle),
       banner: {
         url: currentPost.data.banner.url,
       },

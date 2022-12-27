@@ -98,6 +98,18 @@ export default function Home({ postsPagination }: HomeProps): JSX.Element {
     <>
       <Head>
         <title>spacetraveling. | Home</title>
+
+        <meta
+          name="description"
+          content="Artigos, tendências, tutoriais e muita informação em um blog para você ficar atualizado e progredir na carreira. Confira!"
+        />
+
+        <meta property="og:title" content="spacetraveling. | Home" />
+        <meta
+          property="og:description"
+          content="Artigos, tendências, tutoriais e muita informação em um blog para você ficar atualizado e progredir na carreira. Confira!"
+        />
+        <meta property="og:image" content="/logo.png" />
       </Head>
       <Header />
       <main className={`${commonStyles.container} ${styles.content}`}>
