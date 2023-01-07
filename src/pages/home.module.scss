@@ -40,9 +40,11 @@
     cursor: pointer;
     transition: transform 200ms, box-shadow 200ms;
 
-    &:hover {
-      box-shadow: rgba(0, 0, 0, 0.5) 0px 3px 8px;
-      transform: scale(1.05);
+    @media (min-width: 1140px) {
+      &:hover {
+        box-shadow: rgba(0, 0, 0, 0.5) 0px 3px 8px;
+        transform: scale(1.05);
+      }
     }
 
     h2 {
